@@ -8,11 +8,35 @@ Author: Mikhail Palagin (Wht Mst)
 Website: https://band.link/whtmst
 --]]
 
+-- 20250428: Added a list of messages that are chosen randomly
+
+-- MESSAGES
+local lowManaMsg = {
+    "--- LOW ON MANA ---",
+    "Mana getting low! 30%",
+    "Need mana break soon 30%",
+    "Watch my mana! 30%"
+}
+
+local criticalLowManaMsg = {
+    "--- CRITICAL LOW MANA ---",
+    "Mana critical! 15%",
+    "Dangerously low mana! 15%",
+    "Need mana NOW! 15%"
+}
+
+local outOfManaMessage = {
+    "--- OUT OF MANA ---",
+    "I'm OoM! 5%",
+    "Dry on mana 5%!",
+    "No mana left! 5%",
+    "Mana depleted! 5%"
+}
 
 -- SETTINGS (НАСТРОЙКИ)
-local lowManaMsg = "--- LOW ON MANA ---"  -- Message at 30% of mana (Сообщение при 30% маны)
-local criticalLowManaMsg = "--- CRITICAL LOW MANA ---"  -- Message at 15% of mana (Сообщение при 15% маны)
-local outOfManaMessage = "--- OUT OF MANA ---"  -- Message at 5% of mana (Сообщение при 5% маны)
+--local lowManaMsg = "--- LOW ON MANA ---"  -- Message at 30% of mana (Сообщение при 30% маны)
+--local criticalLowManaMsg = "--- CRITICAL LOW MANA ---"  -- Message at 15% of mana (Сообщение при 15% маны)
+--local outOfManaMessage = "--- OUT OF MANA ---"  -- Message at 5% of mana (Сообщение при 5% маны)
 local chatChannel = "SAY"  -- You can change the channel, for example, to "PARTY" or "RAID" (channel for sending messages) (Вы можете изменить чат, например, на "PARTY" или "RAID" (чат для отправки сообщений))
 local lowManaThreshold1 = 0.30 -- Threshold 30% of mana (Порог 30% маны)
 local lowManaThreshold2 = 0.15 -- Threshold 15% of mana (Порог 15% маны)
@@ -25,7 +49,7 @@ local fontPath = "Interface\\AddOns\\T-OoM\\Fonts\\ARIALN.ttf"  -- File path to 
 
 -- Set to true to enable the respective instance type (Установите true, чтобы включить соответствующий тип инстанса)
 local instanceTypeOptions = { 
-    none = false, -- When outside an instance (В открытом мире)
+    none = true, -- When outside an instance (В открытом мире)
     party = true, -- In 5-man instances (В подземельях на 5-человек)
     raid = false, -- In raid instances (В рейдах)
     arena = false, -- In arenas (На арене)
@@ -45,6 +69,21 @@ local lastUpdateTime = 0
 local lastManaPercentage = 0
 local inInstance = false
 local instanceType = ""
+
+-- Get random message
+local function GetRandomMessage(messageList)
+    if type(messageList) ~= "table" then return "" end
+
+    local count = 0
+    for _, _ in ipairs(messageList) do
+        count = count + 1
+    end
+
+    if count == 0 then return "" end
+
+    local randomIndex = math.random(1, count)
+    return messageList[randomIndex]
+end
 
 -- Create a custom frame (Создание собственного фрейма)
 local function CreateCustomFrame()
@@ -127,14 +166,26 @@ T_OoM:SetScript("OnUpdate", function()
     if instanceTypeOptions[instanceType] then
         if powerToken == "MANA" then
             if manaPercentage <= lowManaThreshold3 and lastManaPercentage > lowManaThreshold3 then
-                SendChatMessage(outOfManaMessage, chatChannel)
-                ShowCustomMessage(outOfManaMessage)
+				msg = GetRandomMessage(outOfManaMessage)
+				SendChatMessage(msg, chatChannel)
+				ShowCustomMessage(msg)
+			
+               -- SendChatMessage(outOfManaMessage, chatChannel)
+               -- ShowCustomMessage(outOfManaMessage)
             elseif manaPercentage <= lowManaThreshold2 and manaPercentage > lowManaThreshold3 and lastManaPercentage > lowManaThreshold2 then
-                SendChatMessage(criticalLowManaMsg, chatChannel)
-                ShowCustomMessage(criticalLowManaMsg)
+                msg = GetRandomMessage(criticalLowManaMsg)
+				SendChatMessage(msg, chatChannel)
+				ShowCustomMessage(msg)
+				
+				--SendChatMessage(criticalLowManaMsg, chatChannel)
+                --ShowCustomMessage(criticalLowManaMsg)
             elseif manaPercentage <= lowManaThreshold1 and manaPercentage > lowManaThreshold2 and lastManaPercentage > lowManaThreshold1 then
-                SendChatMessage(lowManaMsg, chatChannel)
-                ShowCustomMessage(lowManaMsg)
+                msg = GetRandomMessage(lowManaMsg)
+				SendChatMessage(msg, chatChannel)
+				ShowCustomMessage(msg)
+				
+				--SendChatMessage(lowManaMsg, chatChannel)
+                --ShowCustomMessage(lowManaMsg)
             end
         else
             HideCustomMessage()
@@ -142,11 +193,14 @@ T_OoM:SetScript("OnUpdate", function()
     else
         if powerToken == "MANA" then
             if manaPercentage <= lowManaThreshold3 and lastManaPercentage > lowManaThreshold3 then
-                ShowCustomMessage(outOfManaMessage)
+                ShowCustomMessage(GetRandomMessage(outOfManaMessage))
+				-- ShowCustomMessage(outOfManaMessage)
             elseif manaPercentage <= lowManaThreshold2 and manaPercentage > lowManaThreshold3 and lastManaPercentage > lowManaThreshold2 then
-                ShowCustomMessage(criticalLowManaMsg)
+                ShowCustomMessage(GetRandomMessage(criticalLowManaMsg))
+				--ShowCustomMessage(criticalLowManaMsg)
             elseif manaPercentage <= lowManaThreshold1 and manaPercentage > lowManaThreshold2 and lastManaPercentage > lowManaThreshold1 then
-                ShowCustomMessage(lowManaMsg)
+                ShowCustomMessage(GetRandomMessage(lowManaMsg))
+				--ShowCustomMessage(lowManaMsg)
             end
         else
             HideCustomMessage()
