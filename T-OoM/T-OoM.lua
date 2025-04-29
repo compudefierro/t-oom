@@ -9,28 +9,31 @@ Website: https://band.link/whtmst
 --]]
 
 -- 20250428: Added a list of messages that are chosen randomly
+-- 20250429: Added different channels SAY, PARTY and YELL between % of mana
 
 -- MESSAGES
 local lowManaMsg = {
-    "--- LOW ON MANA --- 30%",
-    "Mana getting low! 30%",
-    "Need mana break soon 30%",
-    "Watch my mana! 30%"
+    "--- POCO MANA --- 30%",
+    "Mana bajando! 30%",
+    "Demasiada Sangre!!!: Mana al 30%",
+    "Modo Ahorro de Mana Activado! 30%",
+	"Ese Compa ya esta muerto... 30%"
 }
 
 local criticalLowManaMsg = {
-    "--- CRITICAL LOW MANA --- 15%",
-    "Mana critical! 15%",
-    "Dangerously low mana! 15%",
-    "Need mana NOW! 15%"
+    "--- MUY POCO MANA --- 15%",
+    "Mana bajo: niveles de fe incrementado! 15%",
+    "Mana bajando: mejor un ibuprofeno y a la cama! 15%",
+    "Vamos a palmar!! ahhhhhh mana muy bajo!  Mana 15%",
+	"Corre perra correeeeeee!!! Mana 15%"
 }
 
 local outOfManaMessage = {
-    "--- OUT OF MANA --- 5%",
-    "I'm OoM! 5%",
-    "Dry on mana 5%!",
-    "No mana left! 5%",
-    "Mana depleted! 5%"
+    "Solo Dios revivio de entre los muertos... Mana: 5%",
+    "Ese compa ya esta muerto...! Mana 5%",
+    "Sin mana... me hubiera creado un Warrior... 5%!",
+    "Y dónde esta tu Dios ahora?! Mana 5%",
+    "Todos vamos a morir!!! Mana: 5%"
 }
 
 -- SETTINGS (НАСТРОЙКИ)
@@ -46,15 +49,13 @@ local fontPath = "Interface\\AddOns\\T-OoM\\Fonts\\ARIALN.ttf"  -- File path to 
 
 -- Set to true to enable the respective instance type (Установите true, чтобы включить соответствующий тип инстанса)
 local instanceTypeOptions = { 
-    none = true, -- When outside an instance (В открытом мире)
+    none = false, -- When outside an instance (В открытом мире)
     party = true, -- In 5-man instances (В подземельях на 5-человек)
     raid = false, -- In raid instances (В рейдах)
     arena = false, -- In arenas (На арене)
     pvp = false, -- In battlegrounds (На полях боя)
     scenario = false -- In scenarios (В сценариях)
 }
-
-
 
 -- MAIN CODE (ОСНОВНОЙ КОД)
 local T_OoM = CreateFrame("Frame")
@@ -164,14 +165,17 @@ T_OoM:SetScript("OnUpdate", function()
         if powerToken == "MANA" then
             if manaPercentage <= lowManaThreshold3 and lastManaPercentage > lowManaThreshold3 then
 				msg = GetRandomMessage(outOfManaMessage)
+				local chatChannel = "YELL"
 				SendChatMessage(msg, chatChannel)
 				ShowCustomMessage(msg)
             elseif manaPercentage <= lowManaThreshold2 and manaPercentage > lowManaThreshold3 and lastManaPercentage > lowManaThreshold2 then
                 msg = GetRandomMessage(criticalLowManaMsg)
+				local chatChannel = "PARTY"
 				SendChatMessage(msg, chatChannel)
 				ShowCustomMessage(msg)
             elseif manaPercentage <= lowManaThreshold1 and manaPercentage > lowManaThreshold2 and lastManaPercentage > lowManaThreshold1 then
                 msg = GetRandomMessage(lowManaMsg)
+				local chatChannel = "SAY"
 				SendChatMessage(msg, chatChannel)
 				ShowCustomMessage(msg)
             end
